@@ -1,20 +1,17 @@
-#include <ESP8266WiFi.h>       //wifi library for node mcu
+#include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <String.h>
-#define motor1 16              //motor connected to GPIO5. Basically pin number
+#define motor1 16
 #define motor2 5
 #define motor3 4
 #define motor4 0
 
-//WiFi
-
-WiFiClient client;            //wificlient defining 
-WiFiServer server(80);        //port to 80
+WiFiClient client;
+WiFiServer server(80);
 
 char* ssid = "rudrakshbotx";
 char* password = "BotXDriftKing";
-
 
 void forward();
 void backward();
@@ -25,40 +22,31 @@ void rightturn();
 void leftturn();
 
 void setup() {
-  //In the line Serial.begin(9600) u have to pass the baud rate which should be the same as in the rightmost top corner of the serial monitor written as 115200 baud. If u want to check whether it is connected or not, u may remove the usb cable and after uploading the code and then reconnect it then check in the serial monitor.
   Serial.begin(9600); 
-  delay(500); 
+  delay(500);
 
-  // Set motor pin as output
   pinMode(motor1, OUTPUT);
   pinMode(motor2, OUTPUT);
   pinMode(motor3, OUTPUT);
   pinMode(motor4, OUTPUT);
 
-  //turning on access point
   WiFi.softAP(ssid, password); 
 
-  //output for checking wifi and finding ip
   Serial.println("NodeMCU is connected");    
   Serial.print("IP address: ");
   Serial.println(WiFi.softAPIP());
 
-  //starts server for client requests
   server.begin();
 }
 
 void loop() {
-  //client reads any device connected to network
   client = server.available();
 
-  //if client is connected
   if (client){
-    //read request and string management
     String request = client.readStringUntil('\n');
     Serial.println(request);
     request.trim();
     
-    //motor commands
     if (request == "GET /?dir=forward HTTP/1.1")  {
       forward();
       Serial.println("FORWARD");
@@ -89,7 +77,6 @@ void loop() {
     }
   }
 }
-
 
 void forward() {
   digitalWrite(motor2, LOW);
